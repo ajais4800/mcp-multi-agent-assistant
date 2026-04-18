@@ -1,44 +1,52 @@
-# MCP Multi-Agent Assistant
+# Multi-agent-assistant: LangGraph & MCP Powered AI Orchestrator
 
 ## Overview
-This project is an advanced, multi-agent AI system designed to coordinate smaller sub-agents and execute complex workflows. By integrating directly with the Model Context Protocol (MCP), the agent acts as an autonomous personal assistant, securely navigating and managing tools such as a Task Manager, Calendar, and Notebook. 
+**Multi-agent-assistant** is a production-ready, autonomous AI system that leverages **LangGraph** to coordinate specialized tool-calling workflows. By integrating with the **Model Context Protocol (MCP)**, the agent securely interacts with local data sources and tools, such as a task manager, calendar, and notebook, to solve multi-step user requests with extreme reliability.
 
-When given a multi-step prompt (e.g., *"Read my notes and schedule a meeting based on what you find"*), the primary agent applies logical chain-of-thought to coordinate tasks, call the respective backend tools sequentially, and store the output.
+Instead of simple one-off responses, this assistant uses a **ReAct (Reason + Act)** loop to autonomously decide which tools to use, how to sequence them, and how to verify the results before responding to the user.
+
+## Key Features
+*   **Autonomous Orchestration:** Powered by **LangGraph**, enabling complex cyclic workflows and robust state management.
+*   **A2A Tooling:** Implements the **Model Context Protocol (MCP)** via **FastMCP** for standardized, secure agent-to-app communication.
+*   **Unified Memory:** Seamlessly manages tasks, events, and notes in a local **SQLite** database.
+*   **Premium Web UI:** A clean, responsive chat interface built with **Streamlit** that hides technical complexity and provides a sleek user experience.
 
 ## Technologies Used
-* **Google Agent Development Kit (ADK):** The core multi-agent framework managing orchestration, memory, and state.
-* **Gemini 2.5 Flash (`google-genai`):** The LLM brain fueling the logical decision-making process.
-* **Model Context Protocol (MCP) / FastMCP:** Standardized A2A (Agent-to-App) tool-calling server. 
-* **SQLite:** A lightweight RDBMS simulating AlloyDB structures for secure native storage.
-* **FastAPI:** Operates under the hood to deploy the seamless Interactive Web UI and agent execution endpoints.
+*   **Core Logic:** [LangGraph](https://github.com/langchain-ai/langgraph) (Orchestration & State Management)
+*   **LLM Brain:** [Gemini 2.0 Flash](https://ai.google.dev/gemini-api) (Advanced logical reasoning)
+*   **Interface:** [Streamlit](https://streamlit.io/) (Premium Web Chat UI)
+*   **Protocol:** [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) (Standardized tool-calling)
+*   **Database:** SQLite (Relational storage for notes, tasks, and events)
+*   **Async Bridge:** `nest_asyncio` & `asyncio` for high-performance concurrent task execution.
 
-## How It Works
-1. **The Tool Server:** Our local `mcp_server.py` operates as an isolated execution environment, exposing native python CRUD database functions as standardized API tools to the core agent.
-2. **The Graph:** When the user poses a question, the primary ADK agent queries the MCP server's schemas to determine which tools are required to fulfill the request.
-3. **Execution:** The agent dynamically bridges intent with the database, orchestrating multiple interactions sequentially in the background to return a completed outcome to the user.
+## How to Run Locally
 
-## How to Run It
-
-### 1. Requirements Setup
-Make sure to create a `.env` file at the root of the directory with your API key:
+### 1. Environment Setup
+Create a `.env` file in the root directory:
 ```env
-GEMINI_API_KEY=your_key_here
+GEMINI_API_KEY=your_gemini_api_key_here
 ```
-Install the necessary dependencies utilizing Python:
+
+### 2. Install Dependencies
 ```bash
 pip install -r requirements.txt
 ```
 
-### 2. Launch the Application
-Start the ADK framework server via the command-line:
-
-**To deploy the interactive Web UI (Recommended):**
+### 3. Launch the Web UI
+The main interface is powered by Streamlit:
 ```bash
-adk web .
+python -m streamlit run assistant/web_ui.py
 ```
-Navigate to `http://127.0.0.1:8000` to interact with your Agent directly!
+Automatically opens at `http://localhost:8501`.
 
-**To use the terminal-based interactive CLI:**
+### 4. Terminal CLI (Alternative)
+For raw terminal interaction:
 ```bash
-adk run .
+python assistant/main_cli.py
 ```
+
+## Deployment
+This application is container-ready. To deploy it to **Google Cloud Run**:
+1.  Build a Docker image containing the code and dependencies.
+2.  Deploy to Cloud Run with the `GEMINI_API_KEY` mapped as a secret.
+3.  Use a persistence layer like **Google Cloud SQL (PostgreSQL)** if you wish to migrate from local SQLite to cloud storage.
