@@ -95,6 +95,17 @@ def list_notes() -> str:
         return "No notes found."
     return "\n".join([f"[{r[0]}] {r[2]}: {r[1]}" for r in rows])
 
+def cancel_event(event_title: str) -> str:
+    conn = sqlite3.connect(DB_PATH)
+    c = conn.cursor()
+    c.execute("DELETE FROM events WHERE title LIKE ?", (f"%{event_title}%",))
+    deleted = c.rowcount
+    conn.commit()
+    conn.close()
+    if deleted > 0:
+        return f"Event matching '{event_title}' was successfully canceled."
+    return f"No event found matching '{event_title}'."
+
 if __name__ == "__main__":
     init_db()
     print("Database initialized.")

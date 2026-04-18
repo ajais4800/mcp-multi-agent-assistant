@@ -36,6 +36,11 @@ def list_notes() -> str:
     """List all saved notes."""
     return database.list_notes()
 
+@mcp.tool()
+def cancel_event(event_title: str) -> str:
+    """Cancel a scheduled event by providing its exact or partial title."""
+    return database.cancel_event(event_title)
+
 if __name__ == "__main__":
-    print("Starting MCP Server...")
+    # Ensure no print statements use stdout, or MCP protocol will break!
     mcp.run()
